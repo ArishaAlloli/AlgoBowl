@@ -6,3 +6,6 @@ input notes:
 no loops
 can have forests
 
+link:
+https://code.visualstudio.com/docs/cpp/config-msvc#_prerequisites
+
