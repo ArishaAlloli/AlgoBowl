@@ -1,1 +1,8 @@
-test
+language: cpp bc fastest
+
+ide: doesn't matter as long as we can commit and push
+
+input notes:
+no loops
+can have forests
+
