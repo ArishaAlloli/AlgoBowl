@@ -3,8 +3,16 @@ language: cpp bc fastest
 ide: doesn't matter as long as we can commit and push
 
 input notes:
-no loops
+no edges from vertex to itself
 can have forests
+
+edge cases (check if these are legal): 
+single vertex by itself, legal
+cycle with two vertices (e.g. 1 is a prereq for 2, 2 is a prereq for 1), legal
+connected component with 1 edge and 2 nodes (is this a good one?)
+
+
+
 
 link:
 https://code.visualstudio.com/docs/cpp/config-msvc#_prerequisites
