@@ -19,6 +19,26 @@ algorithm pro con list:
 arisha - first vertex
 
 
+Dijkstra’s with fibonacci heap and other stuff:
+Dijkstra’s algorithm runs in O(m) time plus the time required to perform the 
+heap operations. There are n insert operations (counting one to insert s initially), 
+n delete rnin operations, and at most m - n + 1 decrease operations. Dijkstra’s 
+original implementation uses an array to represent the heap, giving a bound of 
+O(1) time per insert or decrease and O(n) time per delete min, or O(n2) time 
+overall. A more modern heap implementation, the Fibonacci heap [S], needs 0( 1) 
+time per insert or decrease and only O(log n) per delete min, for an overall time 
+bound of O(m + n log n). The same bound is attainable using relaxed heaps [7] or 
+Vheaps [12]. 
+A time of O(m + n log n) is best possible for Dijkstra’s algorithm, if the arc costs 
+are real numbers and only binary comparisons are used in the heap implementa- 
+tion. This is because it is easy to reduce the problem of sorting n numbers to a run 
+of Dijkstra’s algorithm. The question arises whether the O(m + n log n) bound can 
+be beaten in the special case that all the arc costs are integers of moderate size. 
+This is the question we explore in this paper.
+https://www.ise.ncsu.edu/fuzzy-neural/wp-content/uploads/sites/9/2016/02/ShortestPath.pdf
+
+
+
 
 
 link:
