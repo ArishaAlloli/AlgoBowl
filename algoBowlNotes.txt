@@ -36,6 +36,12 @@ of Dijkstra’s algorithm. The question arises whether the O(m + n log n) bound 
 be beaten in the special case that all the arc costs are integers of moderate size. 
 This is the question we explore in this paper.
 https://www.ise.ncsu.edu/fuzzy-neural/wp-content/uploads/sites/9/2016/02/ShortestPath.pdf
+nvm. just realized dijkstra's won't work for this because there are no weights i think?
+
+goal is to turn our graph into a dag. so we need the fastest cycle deleting algorithm that exists
+
+
+
 
 
 
