@@ -62,5 +62,5 @@ if __name__ == '__main__':
     fas_edges = heuristic_feedback_arc_set(G)
     for edge in fas_edges:
         G.remove_edge(*edge)
-    #print("Edges to remove to make the graph acyclic:", fas_edges)
+    print("Edges to remove to make the graph acyclic:", fas_edges)
 
