@@ -120,19 +120,25 @@ def greedy_local_heuristic(G, sccs, degree_dict, queue):
 
 def remove_max_in_degree_node(G):
     max_in_degree_node, _ = max(G.in_degree(), key=lambda x: x[1])
-    max_out_degree_node, _ = max(G.out_degree(), key=lambda x: x[1])
     G.remove_node(max_in_degree_node)
-    nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700, font_size=14)
-    plt.show()
+    #nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700, font_size=14)
+    #plt.show()
     is_dag = dfs(G)
     if not len(is_dag):
         pass
     else:
-        remove_max_in_degree_node(G)
+        max_out_degree_node, _ = max(G.out_degree(), key=lambda x: x[1])
+        if max_out_degree_node in G.nodes():
+            G.remove_node(max_out_degree_node)
+        else:
+            pass
+        is_dag = dfs(G)
+        if len(is_dag):
+            remove_max_in_degree_node(G)
     return G
 
 if __name__ == '__main__':
-    with open("a.txt", 'r') as file:
+    with open("venv/inputs/input_group791.txt", 'r') as file:
         input_str = file.read()
     resulting_graph = parse_input_to_graph(input_str)
     sccs = tc(resulting_graph)
@@ -141,13 +147,24 @@ if __name__ == '__main__':
     for node, neighbors in resulting_graph.items():
         for neighbor in neighbors:
             G.add_edge(node, neighbor)
+    #nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700, font_size=14)
+    #plt.show()
+    graph_after_node_removal = remove_max_in_degree_node(G)
+    is_dag= dfs(graph_after_node_removal)
+    if not len(is_dag):
+        node_to_try=[]
+        for node in graph_after_node_removal.nodes():
+            if G.in_degree(node) == 0:
+                node_to_try.append(node)
+        print(len(node_to_try))
+        print(' '.join(node_to_try))
+        for rm_node in node_to_try:
+            G.remove_node(rm_node)
+        verify_graph_is_dag = dfs(G)
+        if not len(verify_graph_is_dag):
+            print("Success MAM")
+        else:
+            print("sorry")
     nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700, font_size=14)
     plt.show()
-    graph_after_node_removal = remove_max_in_degree_node(G)
-    node_to_try=[]
-    for node in graph_after_node_removal.nodes():
-        if G.out_degree(node) == 0:
-            node_to_try.append(node)
-    print(len(node_to_try))
-    print(' '.join(node_to_try))
 

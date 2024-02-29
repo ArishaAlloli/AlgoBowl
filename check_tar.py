@@ -2,6 +2,9 @@ from queue import Queue
 from tarjan import tarjan
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
+import shutil
+
 
 def parse_input_to_graph(input_str):
     lines = input_str.strip().split("\n")
@@ -68,7 +71,6 @@ def remove_cycles(H):
     cycles = dfs(H)
     while cycles:
         for cycle in cycles:
-
             edge_to_remove = (cycle[0], cycle[1])
             if H.has_edge(*edge_to_remove):
                 H.remove_edge(*edge_to_remove)
@@ -95,7 +97,6 @@ def greedy_local_heuristic(G, sccs, degree_dict, queue):
             #else:
                 edges = [(i, max_node) for i in subgraph.predecessors(max_node)]
                 edges_to_be_removed += edges
-        edges_to_be_removed += edges
     for node in max_nodes_to_remove:
         if node in G:
             G.remove_node(node)
@@ -110,18 +111,14 @@ def greedy_local_heuristic(G, sccs, degree_dict, queue):
         H = heuristic_feedback_arc_set(G, edges_to_remove)
         cycles = remove_cycles(H)
         if len(cycles) < 0:
-            print("Hey Cycles")
-        #sub_graphs = filter_big_scc(G, edges_to_be_removed)
-        #sccs.extend(sub_graphs)
-        #sub_graphs = filter_big_scc(G, edges_to_be_removed)
-        #sccs.extend([frozenset(sg.nodes) for sg in sub_graphs if len(sg.nodes) > 1])
-        return H
-    else:
-        return G
+            return H
+        else:
+            return G
 
 if __name__ == '__main__':
-    with open("a.txt", 'r') as file:
-        input_str = file.read()
+ with open("venv/inputs/input_group797.txt", 'r') as file:
+    output_file_path = "C:/Users/arish/OneDrive/Documents/Algorithms406/AlgoBowl_Python/venv/outputs/output_group797.txt"
+    input_str = file.read()
     resulting_graph = parse_input_to_graph(input_str)
     sccs = tc(resulting_graph)
     unique_sccs = [frozenset(scc) for scc in set(sccs.values())]
@@ -142,11 +139,19 @@ if __name__ == '__main__':
         degree_dict[node] = (in_degree, out_degree, degree_flag)
     q = Queue()
     graph_test = greedy_local_heuristic(G, unique_sccs, degree_dict, q)
-    nodes_with_no_outgoing = []
-    for node in graph_test:
-        if not graph_test[node]:  # Check if the node has no outgoing edges
-            nodes_with_no_outgoing.append(node)
-    print(len(nodes_with_no_outgoing))
-    print(' '.join(nodes_with_no_outgoing))
-    nx.draw(graph_test, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700,font_size=14)
-    plt.show()
+    is_dag = dfs(graph_test)
+    if not len(is_dag):
+        nodes_with_no_incoming = []
+        for node in graph_test.nodes():
+            if graph_test.in_degree(node) == 0 and graph_test.out_degree(node) == 0:
+                nodes_with_no_incoming.append(node)
+        for rm_node in nodes_with_no_incoming:
+            G.remove_node(rm_node)
+        verify_graph_is_dag = dfs(G)
+        if not len(verify_graph_is_dag):
+            with open(output_file_path, 'w') as file:
+                num_courses = str(len(nodes_with_no_incoming))
+                file.write(num_courses + '\n')  # Write number of courses on a new line
+                file.write(' '.join(map(str, nodes_with_no_incoming)))  # Convert nodes to strings before joining
+        else:
+            print("sorry this is not a dag")
