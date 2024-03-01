@@ -57,7 +57,7 @@ def remove_nodes_from_graph(graph, nodes_to_remove):
 
 
 if __name__ == '__main__':
-    with open("venv/inputs/input_group767.txt", 'r') as file:
+    with open("a.txt", 'r') as file:
         input_str = file.read()
     resulting_graph = parse_input_to_graph(input_str)
     temp_graph = resulting_graph

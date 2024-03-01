@@ -17,10 +17,9 @@ def parse_input_to_graph(input_str):
             prerequisite = parts[j]
             graph[prerequisite].append(target_node)
     return graph
-def dfs(graph):
+def dfs(G):
     visited = set()
     cycles = []
-
     for start_node in G:
         if start_node in visited:
             continue
@@ -76,6 +75,24 @@ def remove_cycles(H):
                 H.remove_edge(*edge_to_remove)
         cycles = dfs(H)
     return cycles
+def remove_max_in_degree_node(G):
+    max_in_degree_node, _ = max(G.in_degree(), key=lambda x: x[1])
+    G.remove_node(max_in_degree_node)
+    #nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold', node_size=700, font_size=14)
+    #plt.show()
+    is_dag = dfs(G)
+    if not len(is_dag):
+        pass
+    else:
+        max_out_degree_node, _ = max(G.out_degree(), key=lambda x: x[1])
+        if max_out_degree_node in G.nodes():
+            G.remove_node(max_out_degree_node)
+        else:
+            pass
+        is_dag = dfs(G)
+        if len(is_dag):
+            remove_max_in_degree_node(G)
+    return G
 def greedy_local_heuristic(G, sccs, degree_dict, queue):
     edges_to_be_removed = []
     max_nodes_to_remove =[]
@@ -103,21 +120,29 @@ def greedy_local_heuristic(G, sccs, degree_dict, queue):
     is_dag = dfs(G)
     if len(is_dag) > 0:
         G.remove_edges_from(edges_to_be_removed)
+        is_dag = dfs(G)
+        if len(is_dag) > 0:
+            edges_to_remove = [edge for edge in G.edges() if degree_dict[edge[0]][1] > degree_dict[edge[0]][0]]
+            check_graph = heuristic_feedback_arc_set(G, edges_to_remove)
+            cycles = remove_cycles(check_graph)
+            is_dag = dfs(check_graph)
+            if len(is_dag) > 0:
+                graph = remove_max_in_degree_node(check_graph)
+                is_dag = dfs(graph)
+                if len(is_dag) > 0:
+                    graph = remove_max_in_degree_node(graph)
+                else:
+                    return graph
+            else:
+                return check_graph
+
     else:
         return G
-    is_dag = dfs(G)
-    if len(is_dag) > 0:
-        edges_to_remove = [edge for edge in G.edges() if degree_dict[edge[0]][1] > degree_dict[edge[0]][0]]
-        H = heuristic_feedback_arc_set(G, edges_to_remove)
-        cycles = remove_cycles(H)
-        if len(cycles) < 0:
-            return H
-        else:
-            return G
+
 
 if __name__ == '__main__':
- with open("venv/inputs/input_group797.txt", 'r') as file:
-    output_file_path = "C:/Users/arish/OneDrive/Documents/Algorithms406/AlgoBowl_Python/venv/outputs/output_group797.txt"
+ with open("a.txt", 'r') as file:
+    output_file_path = "a_test_file.txt"
     input_str = file.read()
     resulting_graph = parse_input_to_graph(input_str)
     sccs = tc(resulting_graph)
@@ -140,18 +165,28 @@ if __name__ == '__main__':
     q = Queue()
     graph_test = greedy_local_heuristic(G, unique_sccs, degree_dict, q)
     is_dag = dfs(graph_test)
+    copy_graph = nx.DiGraph()
+    for node, neighbors in resulting_graph.items():
+        for neighbor in neighbors:
+            copy_graph.add_edge(node, neighbor)
     if not len(is_dag):
         nodes_with_no_incoming = []
         for node in graph_test.nodes():
             if graph_test.in_degree(node) == 0 and graph_test.out_degree(node) == 0:
                 nodes_with_no_incoming.append(node)
-        for rm_node in nodes_with_no_incoming:
-            G.remove_node(rm_node)
-        verify_graph_is_dag = dfs(G)
+        copy_graph.remove_nodes_from(nodes_with_no_incoming)
+        verify_graph_is_dag = dfs(copy_graph)
         if not len(verify_graph_is_dag):
             with open(output_file_path, 'w') as file:
                 num_courses = str(len(nodes_with_no_incoming))
+
                 file.write(num_courses + '\n')  # Write number of courses on a new line
                 file.write(' '.join(map(str, nodes_with_no_incoming)))  # Convert nodes to strings before joining
+
         else:
-            print("sorry this is not a dag")
+            graph= remove_max_in_degree_node(copy_graph)
+            is_dag = dfs(graph)
+            if not len(is_dag):
+                remove_max_in_degree_node(graph)
+    else:
+        print("sorry this is not a dag")

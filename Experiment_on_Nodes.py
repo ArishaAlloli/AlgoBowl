@@ -2,6 +2,7 @@ from queue import Queue
 from tarjan import tarjan
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
 def parse_input_to_graph(input_str):
     lines = input_str.strip().split("\n")
     n = int(lines[0])
@@ -17,7 +18,7 @@ def dfs(graph):
     visited = set()
     cycles = []
 
-    for start_node in G:
+    for start_node in graph:
         if start_node in visited:
             continue
         stack = [(start_node, [start_node])]
@@ -25,7 +26,7 @@ def dfs(graph):
             node, path = stack.pop()
             if node not in visited:
                 visited.add(node)
-                for neighbor in G.successors(node):  # Use successors for directed edges
+                for neighbor in graph.successors(node):  # Use successors for directed edges
                     if neighbor in path:
                         cycles.append(path[path.index(neighbor):] + [neighbor])
                     else:
@@ -138,7 +139,7 @@ def remove_max_in_degree_node(G):
     return G
 
 if __name__ == '__main__':
-    with open("venv/inputs/input_group791.txt", 'r') as file:
+    with open("a.txt", 'r') as file:
         input_str = file.read()
     resulting_graph = parse_input_to_graph(input_str)
     sccs = tc(resulting_graph)
